@@ -1,14 +1,18 @@
-const counter = document.getElementById("counter");
-// Paste your Lambda Function URL here
-const apiUrl = "https://xzkysyzeq6sdztt273pdsfhowu0lhalv.lambda-url.us-east-1.on.aws/";
-async function updateCounter() {
-  try {
-    let response = await fetch(apiUrl);
-    let data = await response.json();
-    counter.innerText = data.views;  // matches your Lambda return key
-  } catch (error) {
-    console.error("Error fetching visitor count:", error);
-    counter.innerText = "Error";
-  }
-}
-updateCounter();
+const functionUrl = "https://xzkysyzeq6sdztt273pdsfhowu0lhalv.lambda-url.us-east-1.on.aws/";
+      
+        async function fetchViewCount() {
+          try {
+            const response = await fetch(functionUrl);
+            const data = await response.json();
+      
+            // Display the view count
+            document.getElementById("viewCount").innerText = data.views;
+          } catch (error) {
+            console.log(error)
+            console.error("Error fetching view count:", error);
+            document.getElementById("viewCount").innerText = "error";
+          }
+        }
+      
+        // Run when the page loads
+        window.onload = fetchViewCount;
