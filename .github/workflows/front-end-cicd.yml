@@ -1,7 +1,9 @@
-name: Frontend Deployment to s3
+name: Frontend Deployment to S3
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -9,17 +11,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Sync files to S3
-        run: aws s3 sync . s3://cloud-resume-frontend-shadrach --delete
+      - name: Sync Website folder to S3
+        run: |
+          aws s3 sync ./Website/ s3://cloud-resume-frontend-shadrach \
+            --delete \
+            --exclude "*.md" \
+            --exclude ".DS_Store" \
+            --exclude "Thumbs.db"
 
       - name: Invalidate CloudFront Cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Output deployment info
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "📁 Source: ./Website/ folder"
+          echo "🪣 S3 Bucket: cloud-resume-frontend-shadrach"
+          echo "🌐 CloudFront Distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
