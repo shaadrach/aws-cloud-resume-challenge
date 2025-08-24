@@ -22,7 +22,7 @@ jobs:
 
       - name: Sync Website folder to S3
         run: |
-          aws s3 sync ./Website/ s3://cloud-resume-frontend-shadrach \
+          aws s3 sync ./Website/ s3://shadrach-clour-resume-challenge2 \
             --delete \
             --exclude "*.md" \
             --exclude ".DS_Store" \
@@ -38,5 +38,5 @@ jobs:
         run: |
           echo "✅ Deployment completed successfully!"
           echo "📁 Source: ./Website/ folder"
-          echo "🪣 S3 Bucket: cloud-resume-frontend-shadrach"
+          echo "🪣 S3 Bucket: shadrach-clour-resume-challenge2"
           echo "🌐 CloudFront Distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
