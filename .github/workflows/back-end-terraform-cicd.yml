@@ -22,7 +22,7 @@ jobs:
 
       - name: Sync Website folder to S3
         run: |
-          aws s3 sync ./cloud-resume-backend-terraform/ s3://shadrach-clour-resume-challenge2 \
+          aws s3 sync ./cloud-resume-backend-terraform/ s3://shadrach-cloud-resume-challenge-backend-terraform-deployment\
             --delete \
             --exclude "*.md" \
             --exclude ".DS_Store" \
