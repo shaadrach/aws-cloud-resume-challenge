@@ -1,0 +1,45 @@
+name: Frontend Deployment to S3
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Sync Website folder to S3
+        run: |
+          aws s3 sync ./cloud-resume-backend-terraform/ s3://shadrach-clour-resume-challenge2 \
+            --delete \
+            --exclude "*.md" \
+            --exclude ".DS_Store" \
+            --exclude "Thumbs.db"
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".gitignore" \
+
+      - name: Invalidate CloudFront Cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Output deployment info
+        run: |
+          echo "✅ Deployment completed successfully!"
+          echo "📁 Source: ./Website/ folder"
+          echo "🪣 S3 Bucket: shadrach-clour-resume-challenge2"
+          echo "🌐 CloudFront Distribution: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}"
